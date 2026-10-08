@@ -32,7 +32,7 @@ LLM_MODE=mock PORT=8766 bash run.sh
 
 ### 启用真实模型
 
-在本机 `.env` 中填写 `DEEPSEEK_API_KEY`，确认 `DEEPSEEK_MODEL` 是账户可用的模型。不要将密钥发到聊天或提交 Git。停止旧服务后启动：
+在本机 `.env` 中填写 `DEEPSEEK_API_KEY`，确认 `DEEPSEEK_MODEL` 是账户可用的模型。如果编辑器没有保存隐藏文件，也可以在项目终端运行 `python3 scripts/configure_key.py`，按隐藏输入的提示填写。不要将密钥发到聊天或提交 Git。停止旧服务后启动：
 
 ```bash
 LLM_MODE=deepseek bash run.sh

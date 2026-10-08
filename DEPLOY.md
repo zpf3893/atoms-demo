@@ -12,7 +12,7 @@ DEEPSEEK_MODEL=deepseek-flash
 LLM_MODE=deepseek
 ```
 
-保存后，在项目目录启动：
+若找不到 `.env` 或保存后服务仍显示没有 Key，可在项目终端运行 `python3 scripts/configure_key.py`，它会隐藏输入并写入正确文件。保存后，在项目目录启动：
 
 ```bash
 PORT=8766 bash run.sh
