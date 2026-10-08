@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>今日清单</title>
+<style>
+:root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#30303b;background:#f6f5fa;font-synthesis:none}*{box-sizing:border-box}body{margin:0;padding:40px 22px}main{max-width:690px;margin:auto}.eyebrow{font-size:11px;letter-spacing:2px;font-weight:650;color:#8885a5}.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}h1{font-size:34px;letter-spacing:-1px;font-weight:650;margin:13px 0 10px}header p{font-size:14px;color:#93909d;margin:0 0 24px}.date{font-size:12px;color:#797489;background:#efedf5;border-radius:30px;padding:9px 13px;white-space:nowrap}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px}.stat{background:#fff;border:1px solid #e9e6f0;border-radius:16px;padding:17px 20px}.stat strong{font-size:27px;font-weight:580;display:block}.stat span{color:#9a95a5;font-size:12px;display:block;margin-top:6px}.stat:first-child{background:#edebfa;border-color:#e5e1f5}.stat:first-child strong{color:#7166ac}.card{background:#fff;border:1px solid #e9e6f0;border-radius:20px;padding:20px}form{display:flex;gap:8px;align-items:end}.entry{flex:1;min-width:0}.date-entry{width:142px}label{font-size:11px;color:#8b8497;display:block;margin-bottom:7px}input{font:inherit;font-size:13px;width:100%;height:42px;border:1px solid #e8e5ed;background:#faf9fc;padding:9px 11px;border-radius:10px;color:inherit}button{font:inherit;font-size:13px;cursor:pointer;border:0;border-radius:10px;padding:11px 15px;background:#7970b3;color:white;white-space:nowrap}button:hover{filter:brightness(.96)}button:disabled{opacity:.5;cursor:wait}button:focus-visible,input:focus-visible{outline:2px solid #aba1e3;outline-offset:3px}nav{display:flex;gap:7px;border-bottom:1px solid #efedf3;margin:22px 0 0;padding-bottom:13px}nav button{background:transparent;color:#938c9d;padding:8px 13px}nav button[aria-pressed=true]{background:#f0edf8;color:#7669a8}ul{list-style:none;padding:0;margin:0}li{display:flex;align-items:center;gap:12px;border-bottom:1px solid #f0edf4;padding:16px 0}li:last-child{border:0}li input{flex:none;width:18px;height:18px;accent-color:#8a80b9;cursor:pointer}.task-body{flex:1;min-width:0}.task-text{font-size:14px;overflow-wrap:anywhere}.due{font-size:10px;color:#9a93a4;margin-top:5px}.overdue{color:#bb7770}.done .task-text{color:#aaa5b0;text-decoration:line-through}.remove{padding:6px 9px;background:transparent;color:#b2aaba;font-size:11px}.remove:hover{color:#b86d72;background:#fcf2f3}.empty{text-align:center;padding:36px 16px 28px}.empty-icon{width:44px;height:44px;line-height:44px;font-size:23px;color:#aaa1c9;border:1px dashed #d6cfe8;border-radius:14px;margin:0 auto 15px}.empty strong{font-size:14px;font-weight:550;color:#716a80}.empty p{font-size:12px;color:#aba5b5;line-height:1.8;margin-bottom:0}footer{display:flex;justify-content:space-between;gap:10px;font-size:11px;color:#a5a0af;margin-top:19px;flex-wrap:wrap}.status.error{color:#b96d6d}#retry{background:transparent;color:#9d6b71;padding:0 4px;font-size:11px}#notice{font-size:12px;color:#b26f61;min-height:0;margin-bottom:0}[hidden]{display:none!important}@media(max-width:510px){body{padding:25px 14px}.card{padding:16px}h1{font-size:29px}.stats{gap:8px}.stat{padding:14px}.date{display:none}form{flex-wrap:wrap}.entry{flex-basis:100%}.date-entry{flex:1}.stat strong{font-size:23px}}
+</style></head>
+<body><main><header><div class="top"><div><div class="eyebrow">MAKE ROOM FOR WHAT MATTERS</div><h1>今日清单<span style="color:#aca3d0">.</span></h1></div><span class="date" id="today">让今天井井有条</span></div><p>一点点行动，让想法成为日常。</p></header>
+<section class="stats" aria-label="事项统计"><div class="stat"><strong id="active-count">0</strong><span>待完成</span></div><div class="stat"><strong id="done-count">0</strong><span>已完成</span></div><div class="stat"><strong id="total-count">0</strong><span>全部事项</span></div></section>
+<section class="card"><form id="task-form"><div class="entry"><label for="task-input">下一件想做的事</label><input id="task-input" placeholder="例如：读完书的第一章" maxlength="140" required disabled></div><div class="date-entry"><label for="due-input">截止日期（选填）</label><input id="due-input" type="date" disabled></div><button id="add" disabled>＋ 添加</button></form>
+<nav aria-label="筛选待办"><button type="button" data-filter="all" aria-pressed="true">全部</button><button type="button" data-filter="active" aria-pressed="false">待完成</button><button type="button" data-filter="done" aria-pressed="false">已完成</button></nav>
+<ul id="task-list" aria-label="待办事项"></ul><div id="empty" class="empty"><div class="empty-icon">✓</div><strong id="empty-title">从一件小事开始</strong><p id="empty-description">写下今天想完成的事，<br>给重要的事情留一点空间。</p></div><p id="notice" role="alert"></p></section>
+<footer><span><span id="status" class="status" role="status">正在准备你的清单…</span> <button id="retry" hidden type="button">重试保存</button></span><span>每一步，都算数。</span></footer></main>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const $ = selector => document.querySelector(selector);
+  const day = date => `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+  let tasks = [], filter = 'all', ready = false, saveQueue = Promise.resolve(), revision = 0;
+  $('#today').textContent = new Date().toLocaleDateString('zh-CN', {month:'long',day:'numeric',weekday:'short'});
+  function setStatus(text, failed=false) { $('#status').textContent=text; $('#status').classList.toggle('error',failed); $('#retry').hidden=!failed || !ready; }
+  function persist() {
+    const snapshot = {tasks}, serialized = JSON.stringify(snapshot), current = ++revision;
+    setStatus('正在保存…');
+    // Serial saves preserve the user's action order when they click quickly.
+    saveQueue = saveQueue.catch(()=>{}).then(()=>window.demoStorage.save(JSON.parse(serialized)));
+    saveQueue.then(()=>{if(current===revision)setStatus('已自动保存');},()=>{if(current===revision)setStatus('更改尚未保存，请重试。',true);});
+  }
+  function render() {
+    $('#active-count').textContent=tasks.filter(t=>!t.done).length;
+    $('#done-count').textContent=tasks.filter(t=>t.done).length;
+    $('#total-count').textContent=tasks.length;
+    const shown=tasks.filter(t=>filter==='all'||(filter==='done'?t.done:!t.done));
+    $('#task-list').replaceChildren(); $('#empty').hidden=shown.length>0;
+    $('#empty-title').textContent=filter==='done'?'完成的事会出现在这里':filter==='active'&&tasks.length?'今天的清单已完成':'从一件小事开始';
+    $('#empty-description').textContent=filter==='done'?'完成后勾选事项，留下每一点进步。':filter==='active'&&tasks.length?'留一点空白，好好休息。':'写下今天想完成的事，给重要的事情留一点空间。';
+    for (const item of shown) {
+      const li=document.createElement('li'); li.className=item.done?'done':'';
+      const check=document.createElement('input'); check.type='checkbox'; check.checked=item.done; check.setAttribute('aria-label',`${item.done?'取消完成':'完成'} ${item.text}`);
+      check.addEventListener('change',()=>{item.done=check.checked;render();persist();});
+      const body=document.createElement('div'); body.className='task-body';
+      const text=document.createElement('div'); text.className='task-text'; text.textContent=item.text; body.append(text);
+      if(item.due){const due=document.createElement('div');const late=!item.done&&item.due<day(new Date());due.className=`due${late?' overdue':''}`;due.textContent=`${item.due} 截止${late?' · 已逾期':''}`;body.append(due);}
+      const remove=document.createElement('button'); remove.type='button'; remove.className='remove'; remove.textContent='删除'; remove.setAttribute('aria-label',`删除 ${item.text}`);
+      remove.addEventListener('click',()=>{tasks=tasks.filter(t=>t.id!==item.id);$('#notice').textContent='';render();persist();});
+      li.append(check,body,remove); $('#task-list').append(li);
+    }
+  }
+  $('#task-form').addEventListener('submit',event=>{
+    event.preventDefault(); if(!ready)return;
+    const text=$('#task-input').value.trim(); if(!text){$('#task-input').focus();return;}
+    const next=[...tasks,{id:crypto.randomUUID(),text,done:false,due:$('#due-input').value}];
+    if(new TextEncoder().encode(JSON.stringify({tasks:next})).length>19000){$('#notice').textContent='清单空间已满，请先删除不再需要的事项。';return;}
+    tasks=next; $('#task-input').value=''; $('#due-input').value=''; $('#notice').textContent=''; render(); persist(); $('#task-input').focus();
+  });
+  document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{filter=button.dataset.filter;document.querySelectorAll('[data-filter]').forEach(other=>other.setAttribute('aria-pressed',String(other===button)));render();}));
+  $('#retry').addEventListener('click',persist);
+  try {
+    const saved=await window.demoStorage.load();
+    tasks=Array.isArray(saved?.tasks)?saved.tasks.filter(t=>t&&typeof t.id==='string'&&typeof t.text==='string').map(t=>({id:t.id,text:t.text.slice(0,140),done:!!t.done,due:typeof t.due==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(t.due)?t.due:''})):[];
+    ready=true; $('#task-input').disabled=false; $('#due-input').disabled=false; $('#add').disabled=false;
+    setStatus('数据会自动保存'); render();
+  } catch(error) { setStatus('暂时无法读取清单，请刷新预览后重试。',true); }
+});
+</script></body></html>

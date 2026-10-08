@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>一刻专注</title>
+<style>
+:root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#51453e;background:#faf7f2;font-synthesis:none}*{box-sizing:border-box}body{margin:0;padding:34px 22px}main{max-width:650px;margin:auto}.eyebrow{text-align:center;font-size:10px;letter-spacing:2px;font-weight:650;color:#b59d8b}h1{font-size:31px;text-align:center;font-weight:620;margin:13px 0 8px;letter-spacing:-1px}header p{font-size:12px;text-align:center;color:#b29e8d;margin:0 0 25px}.card{background:#fffdfa;border:1px solid #eee4d8;border-radius:23px;padding:24px 30px}.phase-row{display:flex;align-items:center;justify-content:center;gap:7px;font-size:11px;color:#bba894}.phase-row .active{background:#f3e7d9;color:#a27c58;border-radius:20px;padding:7px 15px}.phase-row .inactive{padding:7px 15px;color:#c7b9aa}.timer-wrap{display:flex;justify-content:center;margin:20px 0}.timer{--progress:0deg;width:220px;height:220px;border-radius:50%;background:conic-gradient(#cfa87e var(--progress),#f0e5d7 0);padding:5px;position:relative}.timer-inner{width:100%;height:100%;border-radius:50%;background:#fffdfa;display:flex;justify-content:center;align-items:center;flex-direction:column}.time{font-size:49px;font-variant-numeric:tabular-nums;font-weight:450;letter-spacing:-2px;color:#80684f}.timer-caption{font-size:11px;color:#b8a087;margin-top:6px}.focus-field{margin:0 auto;max-width:360px}label{font-size:11px;color:#ab9985;display:block;margin:0 0 7px}input{font:inherit;font-size:12px;color:#8c745d;background:#faf5ee;border:1px solid #eddfcf;border-radius:10px;padding:10px 12px;width:100%;height:39px;min-width:0}input::placeholder{color:#c0b29f}.actions{display:flex;gap:9px;justify-content:center;margin:16px 0 23px}button{font:inherit;font-size:12px;cursor:pointer;border:0;border-radius:10px;padding:11px 22px;background:#b79067;color:white}button.secondary{background:#f4ede4;color:#a68b6d}button:focus-visible,input:focus-visible{outline:2px solid #d2b18c;outline-offset:3px}button:disabled,input:disabled{opacity:.55;cursor:default}.settings{display:flex;gap:9px;align-items:end;border-top:1px solid #f0e6da;padding-top:18px}.setting{flex:1;min-width:0}.settings button{padding:11px 13px;background:#f0e5d8;color:#a18363}.hint{font-size:10px;color:#c0ae99;line-height:1.7;margin:10px 0 0}.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}.stat{padding:17px 20px;border:1px solid #eee3d5;background:#fffdfa;border-radius:15px}.stat strong{font-size:24px;font-weight:540;color:#a18666}.stat span{font-size:10px;color:#b5a189;margin-left:5px}.stat p{margin:6px 0 0;color:#baa68e;font-size:10px}.history-title{font-size:11px;color:#a18f7a;margin:21px 0 8px}.history{list-style:none;padding:0;margin:0;font-size:11px;color:#b3a38e}.history li{display:flex;justify-content:space-between;gap:8px;border-bottom:1px solid #eee5d9;padding:9px 0}.history li span:first-child{overflow-wrap:anywhere}.history-empty{font-size:11px;color:#c3b39e;margin:12px 0}#notice{min-height:0;font-size:12px;color:#b68965;text-align:center;margin:0 0 12px}footer{font-size:10px;color:#b8a58e;line-height:1.8;text-align:center;margin-top:17px}.error{color:#ba7968}#retry{font-size:10px;padding:0 4px;background:transparent;color:#ad7964}[hidden]{display:none!important}@media(max-width:430px){body{padding:25px 14px}.card{padding:20px}.timer{width:192px;height:192px}.time{font-size:45px}.settings{gap:7px}.settings button{padding:11px}.stat{padding:15px}.settings label{font-size:10px}}
+</style></head><body><main><header><div class="eyebrow">ONE THING AT A TIME</div><h1>一刻专注<span style="color:#d7bd9c">.</span></h1><p>放慢一点，把注意力交给此刻。</p></header>
+<section class="card"><div class="phase-row" aria-label="当前阶段"><span id="work-phase" class="active">专注时间</span><span id="break-phase" class="inactive">短暂休息</span></div>
+<div class="timer-wrap"><div id="timer-ring" class="timer"><div class="timer-inner"><div id="time" class="time" role="timer" aria-label="剩余 25 分钟">25:00</div><span id="timer-caption" class="timer-caption">准备好，开始一小段专注</span></div></div></div>
+<div class="focus-field"><label for="focus-label">这段时间，专注于…（选填）</label><input id="focus-label" placeholder="读书、写作，或完成一件小事" maxlength="100" disabled></div>
+<div class="actions"><button id="toggle" disabled>开始专注</button><button id="reset" class="secondary" disabled>重置</button></div><p id="notice" role="status"></p>
+<form id="settings" class="settings"><div class="setting"><label for="work-minutes">专注时长（分钟）</label><input id="work-minutes" type="number" value="25" min="1" max="120" step="1" required disabled></div><div class="setting"><label for="break-minutes">休息时长（分钟）</label><input id="break-minutes" type="number" value="5" min="1" max="60" step="1" required disabled></div><button id="apply" disabled>应用</button></form><p class="hint">调整时长会重置当前倒计时。阶段结束后，手动开始下一阶段。</p></section>
+<section class="stats" aria-label="专注统计"><div class="stat"><strong id="sessions">0</strong><span>轮</span><p>已完成专注</p></div><div class="stat"><strong id="minutes">0</strong><span>分钟</span><p>累计专注时长</p></div></section>
+<p class="history-title">最近完成</p><ul id="history" class="history" aria-label="最近专注记录"></ul><p id="history-empty" class="history-empty">完成的每一次专注，都会留在这里。</p>
+<footer><span id="status" role="status">正在恢复计时状态…</span><button id="retry" type="button" hidden>重试保存</button><br>刷新后恢复计时 · 返回页面时核对结束时间</footer>
+</main><script>
+document.addEventListener('DOMContentLoaded',async()=>{
+  const $=selector=>document.querySelector(selector);
+  let state={phase:'work',workMinutes:25,breakMinutes:5,remaining:25*60000,endAt:null,running:false,label:'',sessions:0,totalMinutes:0,history:[]};
+  let ready=false,saveQueue=Promise.resolve(),revision=0;
+  const duration=()=>60000*(state.phase==='work'?state.workMinutes:state.breakMinutes);
+  const validMinutes=(value,max)=>Number.isInteger(value)&&value>=1&&value<=max;
+  function setStatus(text,failed=false){$('#status').textContent=text;$('#status').classList.toggle('error',failed);$('#retry').hidden=!failed||!ready;}
+  function persist(){
+    const serialized=JSON.stringify(state),current=++revision;setStatus('正在保存…');
+    saveQueue=saveQueue.catch(()=>{}).then(()=>window.demoStorage.save(JSON.parse(serialized)));
+    saveQueue.then(()=>{if(current===revision)setStatus('计时与记录已保存');},()=>{if(current===revision)setStatus('更改尚未保存，请重试。',true);});
+  }
+  // Complete only the one running phase. Hidden tabs do not manufacture
+  // additional focus sessions: the next phase always waits for a user click.
+  function finishIfDue(){
+    if(!ready||!state.running||Date.now()<state.endAt)return false;
+    if(state.phase==='work'){
+      state.sessions++;state.totalMinutes+=state.workMinutes;
+      state.history.unshift({id:crypto.randomUUID(),endedAt:state.endAt,minutes:state.workMinutes,label:state.label});
+      state.history=state.history.slice(0,20);state.phase='break';
+      $('#notice').textContent='这一段专注完成了。准备好后，开始休息。';
+    }else{state.phase='work';$('#notice').textContent='休息结束。准备好后，开启下一段专注。';}
+    state.running=false;state.endAt=null;state.remaining=duration();
+    persist();render();return true;
+  }
+  function renderClock(){
+    const left=Math.max(0,state.running?state.endAt-Date.now():state.remaining),seconds=Math.ceil(left/1000);
+    $('#time').textContent=`${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`;
+    $('#time').setAttribute('aria-label',`剩余 ${Math.floor(seconds/60)} 分 ${seconds%60} 秒`);
+    $('#timer-ring').style.setProperty('--progress',`${Math.max(0,Math.min(360,(1-left/duration())*360))}deg`);
+  }
+  function render(){
+    renderClock();
+    $('#work-phase').className=state.phase==='work'?'active':'inactive';$('#break-phase').className=state.phase==='break'?'active':'inactive';
+    $('#toggle').textContent=state.running?'暂停':state.remaining<duration()?'继续':state.phase==='work'?'开始专注':'开始休息';
+    $('#timer-caption').textContent=state.running?(state.phase==='work'?'只做眼前这一件事':'让注意力轻轻放松'):state.remaining<duration()?'已暂停，按你的节奏继续':state.phase==='work'?'准备好，开始一小段专注':'给自己一点休息时间';
+    $('#sessions').textContent=state.sessions;$('#minutes').textContent=state.totalMinutes;
+    $('#work-minutes').disabled=state.running||!ready;$('#break-minutes').disabled=state.running||!ready;$('#apply').disabled=state.running||!ready;
+    $('#history').replaceChildren();$('#history-empty').hidden=state.history.length>0;
+    for(const entry of state.history.slice(0,3)){
+      const li=document.createElement('li'),name=document.createElement('span'),info=document.createElement('span');
+      name.textContent=entry.label||'一次安静的专注';
+      info.textContent=`${new Date(entry.endedAt).toLocaleDateString('zh-CN',{month:'numeric',day:'numeric'})} · ${entry.minutes} 分钟`;li.append(name,info);$('#history').append(li);
+    }
+  }
+  $('#toggle').addEventListener('click',()=>{
+    if(!ready||finishIfDue())return;
+    if(state.running){state.remaining=Math.max(0,state.endAt-Date.now());state.running=false;state.endAt=null;}
+    else{state.running=true;state.endAt=Date.now()+state.remaining;}
+    $('#notice').textContent='';render();persist();
+  });
+  $('#reset').addEventListener('click',()=>{if(!ready)return;if(finishIfDue())return;state.running=false;state.endAt=null;state.remaining=duration();$('#notice').textContent='当前阶段已重置，完成记录会保留。';render();persist();});
+  $('#focus-label').addEventListener('change',()=>{if(!ready)return;state.label=$('#focus-label').value.trim().slice(0,100);persist();});
+  $('#settings').addEventListener('submit',event=>{
+    event.preventDefault();if(!ready||state.running)return;
+    const work=Number($('#work-minutes').value),rest=Number($('#break-minutes').value);
+    if(!validMinutes(work,120)||!validMinutes(rest,60)){$('#notice').textContent='请输入整数：专注 1–120 分钟，休息 1–60 分钟。';return;}
+    state.workMinutes=work;state.breakMinutes=rest;state.remaining=duration();state.endAt=null;$('#notice').textContent='新时长已应用，当前阶段从头开始。';render();persist();
+  });
+  $('#retry').addEventListener('click',persist);
+  try{
+    const saved=await window.demoStorage.load();
+    if(saved&&typeof saved==='object'&&validMinutes(saved.workMinutes,120)&&validMinutes(saved.breakMinutes,60)){
+      state.workMinutes=saved.workMinutes;state.breakMinutes=saved.breakMinutes;state.phase=saved.phase==='break'?'break':'work';
+      state.remaining=Number.isFinite(saved.remaining)&&saved.remaining>0?Math.min(saved.remaining,duration()):duration();
+      state.running=saved.running===true&&Number.isFinite(saved.endAt)&&saved.endAt>0;
+      state.endAt=state.running?Math.min(saved.endAt,Date.now()+duration()):null;
+      state.label=typeof saved.label==='string'?saved.label.slice(0,100):'';
+      state.sessions=Number.isSafeInteger(saved.sessions)&&saved.sessions>=0?saved.sessions:0;
+      state.totalMinutes=Number.isSafeInteger(saved.totalMinutes)&&saved.totalMinutes>=0?saved.totalMinutes:0;
+      state.history=Array.isArray(saved.history)?saved.history.filter(h=>h&&Number.isFinite(h.endedAt)&&h.endedAt>0&&h.endedAt<8640000000000000&&validMinutes(h.minutes,120)).slice(0,20).map(h=>({id:typeof h.id==='string'?h.id:'',endedAt:h.endedAt,minutes:h.minutes,label:typeof h.label==='string'?h.label.slice(0,100):''})):[];
+    }
+    ready=true;$('#focus-label').disabled=false;$('#toggle').disabled=false;$('#reset').disabled=false;
+    $('#focus-label').value=state.label;$('#work-minutes').value=state.workMinutes;$('#break-minutes').value=state.breakMinutes;
+    setStatus('计时状态会自动保存');if(!finishIfDue())render();
+    setInterval(()=>{if(!finishIfDue())renderClock();},250);
+    document.addEventListener('visibilitychange',()=>{if(!finishIfDue())renderClock();});
+  }catch(error){setStatus('暂时无法恢复计时，请刷新预览后重试。',true);}
+});
+</script></body></html>

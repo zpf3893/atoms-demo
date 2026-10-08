@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>生活账本</title>
+<style>
+:root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#33433d;background:#f5f7f4;font-synthesis:none}*{box-sizing:border-box}body{margin:0;padding:36px 22px}main{max-width:760px;margin:auto}.eyebrow{font-size:10px;letter-spacing:2px;font-weight:650;color:#8f9f90}header{display:flex;align-items:center;justify-content:space-between;gap:14px}h1{font-size:32px;letter-spacing:-1px;margin:12px 0 8px;font-weight:630}header p{font-size:13px;color:#9aaba0;margin:0 0 24px}.month-picker{width:146px}.overview{display:grid;grid-template-columns:1.65fr 1fr;gap:13px;margin-bottom:20px}.balance{border-radius:18px;background:#e6eee6;padding:24px}.balance small,.summary small{font-size:11px;color:#7b9282}.money{font-size:35px;font-weight:560;letter-spacing:-1px;margin:13px 0 4px;overflow-wrap:anywhere}.balance p{margin:0;color:#8aa092;font-size:11px}.summary{border:1px solid #e2e9e1;border-radius:18px;background:#fff;padding:24px}.summary strong{font-size:30px;font-weight:550;display:block;margin:15px 0 6px}.summary p{font-size:11px;color:#9ba99e;margin:0}.card{background:white;border:1px solid #e5ebe3;border-radius:18px;padding:20px}h2{font-size:14px;font-weight:600;margin:0 0 18px}.form-row{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:10px}.note-row{display:flex;gap:10px;margin-top:12px;align-items:end}.note-row .field{flex:1;min-width:0}label{display:block;font-size:11px;color:#87978b;margin-bottom:6px}input,select{font:inherit;font-size:12px;background:#fafcf9;color:#516354;border:1px solid #e3e9e0;border-radius:9px;height:39px;padding:8px 10px;width:100%;min-width:0}button{font:inherit;font-size:12px;cursor:pointer;border:0;border-radius:9px;padding:11px 17px;background:#668874;color:white}button:disabled{opacity:.5;cursor:wait}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #95bca1;outline-offset:3px}.history{display:flex;align-items:center;justify-content:space-between;margin:25px 0 13px}.history h2{margin:0}.history select{width:119px}.records{list-style:none;padding:0;margin:0}.record{display:flex;align-items:center;gap:11px;padding:14px 0;border-bottom:1px solid #edf1ea}.record:last-child{border:0}.category-icon{width:35px;height:35px;flex:none;display:grid;place-items:center;border-radius:11px;background:#edf2e9;color:#84a085;font-size:12px}.record-body{flex:1;min-width:0}.record-title{font-size:13px;color:#57645a;overflow-wrap:anywhere}.record-meta{font-size:10px;color:#a5afa5;margin-top:5px}.record-amount{font-size:14px;color:#5f7564;white-space:nowrap;font-variant-numeric:tabular-nums}.remove{padding:6px 7px;background:transparent;color:#abb5aa;font-size:10px}.remove:hover{color:#b67871}.empty{text-align:center;padding:25px 12px 13px;color:#a3b09f;font-size:12px;line-height:1.9}.empty .glyph{display:grid;place-items:center;width:42px;height:42px;margin:0 auto 13px;font-size:23px;border:1px dashed #cbd8c7;border-radius:13px;color:#9caf98}.empty strong{font-weight:500;color:#7f927e;display:block;font-size:13px}.empty p{margin:6px 0}#notice{font-size:12px;color:#b37a69;margin:9px 0 0}footer{display:flex;justify-content:space-between;gap:8px;font-size:10px;color:#9ba995;margin:17px 0;flex-wrap:wrap}.error{color:#b6756b}#retry{font-size:10px;background:transparent;color:#aa7668;padding:0 4px}[hidden]{display:none!important}@media(max-width:500px){body{padding:24px 14px}h1{font-size:28px}.month-picker{width:125px}.overview{gap:9px}.balance,.summary{padding:19px 15px}.money{font-size:28px}.card{padding:16px}.form-row{grid-template-columns:1fr 1fr}.form-row .field:last-child{grid-column:1/-1}.record{gap:8px}.record-amount{font-size:12px}.remove{padding:5px}.category-icon{width:29px;height:29px}}
+</style></head><body><main>
+<header><div><div class="eyebrow">SMALL NOTES, CLEARER DAYS</div><h1>生活账本<span style="color:#b2c0a8">.</span></h1><p>记录生活里的每一笔。</p></div><div class="month-picker"><label for="month">查看月份</label><input id="month" type="month" aria-label="查看月份"></div></header>
+<section class="overview" aria-label="月度统计"><div class="balance"><small>本月支出 · 人民币</small><div class="money" id="total">¥ 0.00</div><p id="summary-period">清楚记录，从今天开始</p></div><div class="summary"><small>本月记账</small><strong id="count">0 <span style="font-size:11px;color:#9daa99">笔</span></strong><p id="average">平均每笔 ¥ 0.00</p></div></section>
+<section class="card"><h2>记一笔支出</h2><form id="expense-form"><div class="form-row"><div class="field"><label for="amount">金额（元）</label><input id="amount" type="number" min="0.01" max="999999.99" step="0.01" placeholder="0.00" required disabled></div><div class="field"><label for="category">分类</label><select id="category" disabled><option>餐饮</option><option>交通</option><option>购物</option><option>居住</option><option>娱乐</option><option>其他</option></select></div><div class="field"><label for="date">日期</label><input id="date" type="date" required disabled></div></div><div class="note-row"><div class="field"><label for="note">备注（选填）</label><input id="note" maxlength="80" placeholder="例如：午后的咖啡" disabled></div><button id="add" disabled>＋ 记一笔</button></div></form><p id="notice" role="alert"></p>
+<div class="history"><h2>支出明细 <span id="filter-count" style="font-size:11px;font-weight:400;color:#a3afa0"></span></h2><select id="filter" aria-label="按分类筛选"><option value="all">全部分类</option><option>餐饮</option><option>交通</option><option>购物</option><option>居住</option><option>娱乐</option><option>其他</option></select></div><ul id="records" class="records" aria-label="支出记录"></ul><div id="empty" class="empty"><div class="glyph">¥</div><strong>为生活留下清晰的记录</strong><p>添加第一笔支出，<br>开始了解自己的日常花费。</p></div></section>
+<footer><span><span id="status" role="status">正在准备你的账本…</span><button id="retry" hidden type="button">重试保存</button></span><span>个人记录 · 数据自动保存</span></footer>
+</main><script>
+document.addEventListener('DOMContentLoaded',async()=>{
+  const $=selector=>document.querySelector(selector), categories=['餐饮','交通','购物','居住','娱乐','其他'];
+  const day=date=>`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+  const money=cents=>(cents/100).toLocaleString('zh-CN',{minimumFractionDigits:2,maximumFractionDigits:2});
+  let expenses=[], ready=false, saveQueue=Promise.resolve(), revision=0;
+  $('#date').value=day(new Date()); $('#month').value=day(new Date()).slice(0,7);
+  function setStatus(text,failed=false){$('#status').textContent=text;$('#status').classList.toggle('error',failed);$('#retry').hidden=!failed||!ready;}
+  function persist(){
+    const serialized=JSON.stringify({expenses}),current=++revision;setStatus('正在保存…');
+    saveQueue=saveQueue.catch(()=>{}).then(()=>window.demoStorage.save(JSON.parse(serialized)));
+    saveQueue.then(()=>{if(current===revision)setStatus('已自动保存');},()=>{if(current===revision)setStatus('更改尚未保存，请重试。',true);});
+  }
+  function validDate(value){
+    if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;
+    const parsed=new Date(`${value}T12:00:00`);return Number.isFinite(parsed.getTime())&&day(parsed)===value;
+  }
+  function render(){
+    const month=$('#month').value, category=$('#filter').value;
+    const monthly=expenses.filter(e=>e.date.slice(0,7)===month), total=monthly.reduce((sum,e)=>sum+e.cents,0);
+    $('#total').textContent=`¥ ${money(total)}`;$('#count').textContent=`${monthly.length} 笔`;$('#average').textContent=`平均每笔 ¥ ${money(monthly.length?Math.round(total/monthly.length):0)}`;
+    $('#summary-period').textContent=month?`${month.replace('-',' 年 ')} 月 · 全部分类`:'请选择查看月份';
+    const shown=monthly.filter(e=>category==='all'||e.category===category).sort((a,b)=>b.date.localeCompare(a.date)||b.created-a.created);
+    $('#filter-count').textContent=category==='all'?'':`· ${category} ¥ ${money(shown.reduce((sum,e)=>sum+e.cents,0))}`;
+    $('#records').replaceChildren();$('#empty').hidden=shown.length>0;
+    $('#empty strong').textContent=category==='all'?'这个月还没有记录':`这个月还没有${category}支出`;
+    $('#empty p').textContent=category==='all'?'记下第一笔支出，让每一笔都清清楚楚。':'可以切换分类查看其他记录。';
+    for(const expense of shown){
+      const li=document.createElement('li');li.className='record';
+      const icon=document.createElement('div');icon.className='category-icon';icon.textContent=expense.category.slice(0,1);icon.setAttribute('aria-hidden','true');
+      const body=document.createElement('div');body.className='record-body';
+      const title=document.createElement('div');title.className='record-title';title.textContent=expense.note||expense.category;
+      const meta=document.createElement('div');meta.className='record-meta';meta.textContent=`${expense.date} · ${expense.category}`;body.append(title,meta);
+      const amount=document.createElement('div');amount.className='record-amount';amount.textContent=`− ¥ ${money(expense.cents)}`;
+      const remove=document.createElement('button');remove.type='button';remove.className='remove';remove.textContent='删除';remove.setAttribute('aria-label',`删除 ${expense.date} ${expense.note||expense.category} ${money(expense.cents)} 元`);
+      remove.addEventListener('click',()=>{expenses=expenses.filter(e=>e.id!==expense.id);$('#notice').textContent='';render();persist();});
+      li.append(icon,body,amount,remove);$('#records').append(li);
+    }
+  }
+  $('#expense-form').addEventListener('submit',event=>{
+    event.preventDefault();if(!ready)return;
+    const value=$('#amount').value.trim(),numeric=Number(value),date=$('#date').value,category=$('#category').value;
+    // Convert the decimal string to integer cents to avoid repeated float errors.
+    if(!/^\d+(?:\.\d{1,2})?$/.test(value)||!Number.isFinite(numeric)||numeric<=0||numeric>999999.99){$('#notice').textContent='请输入 0.01 至 999999.99 元之间的金额，最多两位小数。';return;}
+    if(!validDate(date)||!categories.includes(category)){$('#notice').textContent='请选择有效的日期和分类。';return;}
+    const [whole,fraction='']=value.split('.'),cents=Number(whole)*100+Number(fraction.padEnd(2,'0'));
+    const next=[...expenses,{id:crypto.randomUUID(),cents,category,date,note:$('#note').value.trim(),created:Date.now()}];
+    if(new TextEncoder().encode(JSON.stringify({expenses:next})).length>19000){$('#notice').textContent='账本空间已满，请先删除不再需要的记录。';return;}
+    expenses=next;$('#month').value=date.slice(0,7);$('#filter').value='all';$('#amount').value='';$('#note').value='';$('#notice').textContent='';render();persist();$('#amount').focus();
+  });
+  $('#month').addEventListener('change',render);$('#filter').addEventListener('change',render);$('#retry').addEventListener('click',persist);
+  try{
+    const saved=await window.demoStorage.load();
+    expenses=Array.isArray(saved?.expenses)?saved.expenses.filter(e=>e&&typeof e.id==='string'&&Number.isSafeInteger(e.cents)&&e.cents>0&&e.cents<=99999999&&validDate(e.date)&&categories.includes(e.category)).map(e=>({id:e.id,cents:e.cents,date:e.date,category:e.category,note:typeof e.note==='string'?e.note.slice(0,80):'',created:Number.isFinite(e.created)?e.created:0})):[];
+    ready=true;document.querySelectorAll('#expense-form input,#expense-form select,#expense-form button').forEach(el=>el.disabled=false);setStatus('数据会自动保存');render();
+  }catch(error){setStatus('暂时无法读取账本，请刷新预览后重试。',true);}
+});
+</script></body></html>
