@@ -4,7 +4,9 @@
 
 ## 第一次部署
 
-1. 打开[腾讯云轻量应用服务器控制台](https://console.cloud.tencent.com/lighthouse/instance/index)，购买一台 Linux 服务器。你目前没有域名，建议先选**中国香港地域**、**应用模板 → Docker CE**、约 **2 核 CPU / 2 GB 内存**的入门规格和 **1 个月**时长；以购买页实际可选项和价格为准。按需关闭自动续费。中国内地地域的网站上线涉及备案；香港服务器从内地访问可能有跨境网络延迟。不要为了部署本项目去 Render 添加银行卡。
+1. **先看免费试用**：打开[腾讯云免费体验馆](https://cloud.tencent.com/act/pro/free)，搜索「轻量应用服务器」。官方活动页列有个人认证的 **2 核 2 GB、1 个月**试用；实际资格、名额和可选地域以你登录后的领取页面为准。进入确认页后，核对**实付金额为 0 元**、地域能选**中国香港**、镜像能选**Docker CE 应用模板**、以及是否勾选自动续费；这几项都合适再领取。活动页未说明该试用一定支持香港和 Docker CE，不要只凭控制台横幅判断。
+
+   如果免费试用只有中国内地地域，先不要把它当作本 Demo 的对外分享服务器：腾讯云文档写明，中国内地服务器对外提供网站或 App 服务需要备案，申请备案的实例时长须至少 3 个月。你可以用免费实例学习部署；要按本指南直接分享公网 IP，优先使用**中国香港**地域。免费名额不符合条件时，再到[轻量应用服务器控制台](https://console.cloud.tencent.com/lighthouse/instance/index)选择香港、Docker CE、约 2 核 2 GB、1 个月，按购买页核对价格和续费设置。香港服务器从内地访问可能有跨境网络延迟。
 2. 在服务器列表找到新实例，记下**公网 IP**，单击实例卡片上的「登录」。以下命令都在打开的**服务器终端**执行，不是在你电脑的 VS Code 终端执行。
 3. 先准备 Git 和 Python，再从 GitHub 下载代码：
 
@@ -60,4 +62,4 @@ curl -fsS http://127.0.0.1:8000/healthz
 - 页面能打开但 AI 不生成：确认服务器 `.env` 中已填写有效 Key、DeepSeek 账户有额度、服务器可以访问 `api.deepseek.com`。不要把密钥或完整 `.env` 发给别人。
 - `git pull` 提示本地修改冲突：只在服务器改 `.env`，项目代码在电脑上改并推到 GitHub；不要在服务器修改受 Git 管理的代码文件。`.env` 被 Git 忽略，正常更新不会覆盖它。
 
-参考：[腾讯云 Docker CE 模板](https://cloud.tencent.com/document/product/1207/60423)、[轻量应用服务器防火墙](https://cloud.tencent.com/document/product/1207/89060)、[地域和跨境网络说明](https://cloud.tencent.com/document/product/1207/50103)。
+参考：[免费体验馆](https://cloud.tencent.com/act/pro/free)、[备案和实例时长限制](https://cloud.tencent.com/document/product/1207/44376/)、[腾讯云 Docker CE 模板](https://cloud.tencent.com/document/product/1207/60423)、[轻量应用服务器防火墙](https://cloud.tencent.com/document/product/1207/89060)、[地域和跨境网络说明](https://cloud.tencent.com/document/product/1207/50103)。
