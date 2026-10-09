@@ -128,7 +128,7 @@ node tests/template_behavior.test.mjs
 
 ## 公网部署与提交
 
-按步骤操作请看 [DEPLOY.md](DEPLOY.md)：本机接入 DeepSeek、上传 GitHub，以及使用 Render 发布完整工作台。
+按步骤操作请看 [DEPLOY_TENCENT.md](DEPLOY_TENCENT.md)：腾讯云轻量应用服务器部署和后续更新；本机接入 DeepSeek、上传 GitHub 或使用 Render 的说明见 [DEPLOY.md](DEPLOY.md)。
 
 使用支持 Python 的服务器或容器托管平台，并为 SQLite 配置持久磁盘。只上传静态前端无法提供模型接口和后端保存能力。示例容器命令：
 
