@@ -175,6 +175,20 @@ class Store:
             self._idle(db, pid)
             db.execute("UPDATE projects SET archived=?,updated_at=? WHERE id=?", (int(archived), now(), pid))
 
+    def delete_archived(self, pid):
+        """Remove an archived project and all of its dependent records atomically."""
+        with self.connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            row = db.execute("SELECT archived FROM projects WHERE id=?", (pid,)).fetchone()
+            if row is None:
+                raise ValueError("项目不存在")
+            if not row["archived"]:
+                raise ValueError("请先归档项目，再永久删除。")
+            self._idle(db, pid)
+            for table in ("runs", "messages", "versions"):
+                db.execute(f"DELETE FROM {table} WHERE project_id=?", (pid,))
+            db.execute("DELETE FROM projects WHERE id=?", (pid,))
+
     def version(self, pid, vid):
         with self.connect() as db:
             row = db.execute("SELECT id,number,html,prompt,summary,mode,source,created_at FROM versions WHERE project_id=? AND id=?", (pid, vid)).fetchone()

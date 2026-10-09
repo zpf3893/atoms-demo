@@ -73,6 +73,24 @@ def test_rename_archive_restore_and_list_metadata(app):
         assert client.get(f'/api/projects/{pid}').json()['html'] == HTML
 
 
+def test_permanent_delete_requires_archive_and_removes_project_data(app):
+    with TestClient(app) as owner, TestClient(app) as other:
+        project = save(owner, create(owner, '待清理项目'))
+        pid = project['id']
+        owner.put(f'/api/projects/{pid}/state', json={'value': {'entries': [1]}})
+        assert owner.delete(f'/api/projects/{pid}').status_code == 409
+        run = app.state.store.start_run(pid, owner.cookies.get('atoms_owner'), '一次已结束的生成', 20, 100)
+        app.state.store.fail(run, '已停止', 'cancelled')
+        assert owner.post(f'/api/projects/{pid}/archive').status_code == 200
+        assert other.delete(f'/api/projects/{pid}').status_code == 404
+        assert owner.delete(f'/api/projects/{pid}').status_code == 204
+        assert owner.get(f'/api/projects/{pid}').status_code == 404
+        assert owner.get('/api/projects?archived=true').json() == []
+        with app.state.store.connect() as db:
+            for table in ('projects', 'versions', 'messages', 'runs'):
+                assert db.execute(f'SELECT COUNT(*) FROM {table} WHERE {"id" if table == "projects" else "project_id"}=?', (pid,)).fetchone()[0] == 0
+
+
 def test_busy_mutations_do_not_race_generation(app):
     with TestClient(app) as client:
         project = save(client, create(client)); pid = project['id']

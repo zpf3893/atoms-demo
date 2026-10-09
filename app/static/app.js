@@ -63,7 +63,7 @@ const preview = createPreview($('#preview'), api, message => {
 }, message => $('#data-status').textContent = message);
 
 // One dialog implementation keeps keyboard, Escape and cancellation consistent.
-function modal({ title, description = '', confirm = '确定', input, extra = '', cancel = true }) {
+function modal({ title, description = '', confirm = '确定', input, inputLabel = '项目名称', extra = '', cancel = true }) {
   if ($('#action-dialog').open) return Promise.resolve(null);
   $('#dialog-title').textContent = title;
   $('#dialog-kicker').textContent = 'ATOMS · 工作空间';
@@ -71,7 +71,7 @@ function modal({ title, description = '', confirm = '确定', input, extra = '',
   $('#dialog-confirm').textContent = confirm;
   $('#dialog-cancel').hidden = !cancel;
   $('#dialog-field').hidden = input === undefined;
-  $('#dialog-label').textContent = '项目名称';
+  $('#dialog-label').textContent = inputLabel;
   $('#dialog-input').value = input ?? '';
   $('#dialog-input').required = input !== undefined;
   $('#dialog-extra').replaceChildren();
@@ -208,6 +208,7 @@ function renderCard(item, template) {
     if (!item.archived) actions.append(button('重命名', '', () => renameProject(item)));
     actions.append(button('复制', '', () => duplicateProject(item)), button('备份', '', () => downloadFile(item, 'backup')),
       button(item.archived ? '恢复项目' : '归档', '', () => archiveProject(item)));
+    if (item.archived) actions.append(button('永久删除', 'danger-action', () => deleteProject(item)));
     body.append(actions);
   }
   card.append(cover, body); return card;
@@ -330,6 +331,20 @@ async function archiveProject(project) {
     await preview.flush(project.id);
     await post(`/projects/${project.id}/${project.archived ? 'unarchive' : 'archive'}`);
     await refreshLists(); toast(project.archived ? '项目已恢复' : '项目已移到归档箱');
+  });
+}
+async function deleteProject(project) {
+  if (state.busy || !project.archived) return;
+  const typed = await modal({
+    title: `永久删除“${project.title}”？`,
+    description: '项目、全部代码版本和应用数据都会删除，且无法恢复。请先备份需要保留的内容。',
+    input: '', inputLabel: `输入项目名称“${project.title}”确认`, confirm: '永久删除',
+  });
+  if (!typed) return;
+  if (typed !== project.title) { toast('项目名称不一致，未删除'); return; }
+  await locked(async () => {
+    await api(`/projects/${project.id}`, { method: 'DELETE' });
+    await refreshLists(); toast('项目已永久删除');
   });
 }
 async function saveCode() {
@@ -480,7 +495,10 @@ $('#history-toggle').onclick = () => toggleHistory($('#history-panel').hidden);
 $('#history-close').onclick = () => toggleHistory(false);
 function fillPrompt(value) { $('#prompt').value = value; syncControls(); $('#prompt').focus(); }
 $$('[data-suggestion]').forEach(item => item.onclick = () => fillPrompt(item.dataset.suggestion));
-$$('[data-idea]').forEach(item => item.onclick = () => { $('#home-prompt').value = item.dataset.idea; $('#home-prompt').focus(); });
+$$('[data-idea]').forEach(item => item.onclick = () => {
+  if (!liveModel()) { safely(() => createProject(item.dataset.template)); return; }
+  $('#home-prompt').value = item.dataset.idea; $('#home-prompt').focus();
+});
 $('#repair-prompt').onclick = () => fillPrompt('请修复当前应用的脚本错误，并保留原有功能：' + $('#runtime-error span').textContent);
 $('#composer').onsubmit = event => { event.preventDefault(); safely(() => generate($('#prompt').value.trim())); };
 $('#home-composer').onsubmit = event => { event.preventDefault(); safely(async () => {
@@ -509,7 +527,7 @@ async function init() {
   $('#connection-icon').textContent = liveModel() ? '✓' : '✧';
   $('#top-mode').textContent = liveModel() ? '✦ DeepSeek 已配置' : '✧ 无需 API，也能开始';
   $('#top-mode').classList.toggle('ready', liveModel());
-  $('#home-mode-note').textContent = liveModel() ? 'DeepSeek 驱动 · 自动保存版本' : '先用下方模板，自由生成需接入 API';
+  $('#home-mode-note').textContent = liveModel() ? 'DeepSeek 驱动 · 自动保存版本' : '点击下方快捷入口，直接打开可用模板';
   renderSidebar();
   try { await navigate(location.hash.slice(2) || 'home'); }
   catch (error) {

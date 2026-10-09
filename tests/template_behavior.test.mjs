@@ -19,7 +19,7 @@ async function mount(id,saved={},now=Date.UTC(2026,8,29,9)){
   }
   const filters=['all','active','done'].map(filter=>{const el=new Element();el.dataset.filter=filter;return el;});
   const doc=new Element();doc.querySelector=selector=>{if(!elements.has(selector))elements.set(selector,new Element());return elements.get(selector);};
-  doc.querySelectorAll=selector=>selector==='[data-filter]'?filters:selector.startsWith('#expense-form')?['amount','category','date','note','add'].map(key=>elements.get(`#${key}`)):[];
+  doc.querySelectorAll=selector=>selector==='[data-filter]'?filters:selector.startsWith('#expense-form')?['kind','amount','category','date','note','add'].map(key=>elements.get(`#${key}`)):[];
   doc.createElement=()=>new Element();
   const clock={now},intervals=[],saves=[];
   class ClockDate extends Date{constructor(...args){super(...(args.length?args:[clock.now]));}static now(){return clock.now;}}
@@ -41,11 +41,23 @@ await reloaded.$('#task-list').children[0].children[2].emit('click');await reloa
 console.log('PASS tasks: add, toggle, filtering, persisted reload, delete');
 const expenses=await mount('expenses');expenses.$('#category').value='餐饮';expenses.$('#filter').value='all';
 for(const value of ['0.10','0.20']){expenses.$('#amount').value=value;await expenses.$('#expense-form').emit('submit');await expenses.tick();}
-assert.equal(expenses.$('#total').textContent,'¥ 0.30');assert.equal(expenses.saves.at(-1).expenses[0].cents,10);
+assert.equal(expenses.$('#total').textContent,'¥ 0.30');assert.equal(expenses.$('#net-total').textContent,'− ¥ 0.30');assert.equal(expenses.saves.at(-1).expenses[0].cents,10);
+expenses.$('#kind').value='income';await expenses.$('#kind').emit('change');assert.equal(expenses.$('#category').value,'工资');
+expenses.$('#amount').value='12.50';await expenses.$('#expense-form').emit('submit');await expenses.tick();
+assert.equal(expenses.$('#income-total').textContent,'¥ 12.50');assert.equal(expenses.$('#net-total').textContent,'¥ 12.20');
+assert.equal(expenses.saves.at(-1).expenses.at(-1).type,'income');
+expenses.$('#type-filter').value='income';await expenses.$('#type-filter').emit('change');assert.equal(expenses.$('#records').children.length,1);
+assert.equal(expenses.$('#records').children[0].children[2].textContent,'+ ¥ 12.50');
+expenses.$('#type-filter').value='all';await expenses.$('#type-filter').emit('change');
 const before=expenses.saves.length;expenses.$('#amount').value='1.234';await expenses.$('#expense-form').emit('submit');await expenses.tick();assert.equal(expenses.saves.length,before);
 expenses.$('#filter').value='交通';await expenses.$('#filter').emit('change');assert.equal(expenses.$('#records').children.length,0);
-expenses.$('#filter').value='all';await expenses.$('#filter').emit('change');await expenses.$('#records').children[0].children[3].emit('click');await expenses.tick();assert.equal(expenses.saves.at(-1).expenses.length,1);
-console.log('PASS expenses: integer cents, sum, reject >2 decimals, filter, delete');
+expenses.$('#filter').value='all';await expenses.$('#filter').emit('change');await expenses.$('#records').children[0].children[3].emit('click');await expenses.tick();assert.equal(expenses.saves.at(-1).expenses.length,2);
+const legacy=structuredClone(expenses.saves.at(-1));delete legacy.expenses[0].type;
+const reloadedExpenses=await mount('expenses',legacy);
+const legacyExpenseCents=legacy.expenses.filter(e=>(e.type||'expense')==='expense').reduce((sum,e)=>sum+e.cents,0);
+assert.equal(reloadedExpenses.$('#total').textContent,`¥ ${(legacyExpenseCents/100).toFixed(2)}`);
+assert.equal(reloadedExpenses.$('#records').children.length,legacy.expenses.length);
+console.log('PASS expenses: income, expense, net balance, integer cents, filters, delete, legacy reload');
 const focus=await mount('focus');focus.$('#work-minutes').value='1';focus.$('#break-minutes').value='1';await focus.$('#settings').emit('submit');await focus.tick();assert.equal(focus.$('#time').textContent,'01:00');
 await focus.$('#toggle').emit('click');await focus.tick();focus.clock.now+=15000;await focus.$('#toggle').emit('click');await focus.tick();assert.equal(focus.saves.at(-1).remaining,45000);assert.equal(focus.saves.at(-1).running,false);
 const paused=await mount('focus',focus.saves.at(-1),focus.clock.now+30000);assert.equal(paused.$('#time').textContent,'00:45');

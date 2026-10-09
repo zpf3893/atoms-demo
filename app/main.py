@@ -263,6 +263,12 @@ def create_app(settings=None, model=None):
         change(lambda: store.archive(pid, False))
         return owned(pid, request)
 
+    @app.delete("/api/projects/{pid}", status_code=204)
+    def delete_project(pid: str, request: Request):
+        owned(pid, request)
+        change(lambda: store.delete_archived(pid))
+        return Response(status_code=204)
+
     @app.post("/api/projects/{pid}/duplicate", status_code=201)
     def duplicate_project(pid: str, request: Request):
         owned(pid, request)
